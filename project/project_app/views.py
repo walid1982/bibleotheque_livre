@@ -1,9 +1,12 @@
 from django.shortcuts import render
+from .models import *
 
 # Create your views here.
 def index(request):
-    #return HttpResponse("Hello, world. You're at the pages index.")
-    return render(request, 'pages/index.html')
+    context = {
+        'books': Book.objects.all(),
+    }
+    return render(request, 'pages/index.html', context)
 
 def books(request):
-    return render (request, 'pages/books.html')
+    return render(request, 'pages/books.html')

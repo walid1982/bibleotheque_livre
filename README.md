@@ -1,65 +1,112 @@
-Projet : Application de gestion d’une bibliothèque de livres avec Django
+Projet : Application de gestion d’une bibliothèque de livres (Django)
+===============================================================================
 
-Ce projet consiste à développer une application web de gestion d’une bibliothèque de livres en utilisant le framework Django. L’objectif principal est de permettre la gestion, la consultation et l’organisation d’une collection de livres à travers une interface web simple et intuitive.
+Ce dépôt contient une application web Django pour gérer une bibliothèque de livres
+(CRUD complet : ajout, affichage, mise à jour et suppression de livres).
 
-L’application repose sur une architecture MVC (Modèle–Vue–Template) propre à Django. Les données sont stockées dans une base de données SQLite, qui est légère et parfaitement adaptée aux projets de développement et aux petites applications web.
 
-Fonctionnalités principales
+1. Prérequis
+-------------------------------------------------------------------------------
 
-L’application permettra plusieurs fonctionnalités essentielles :
+- Python 3.12 (ou version 3.10+)
+- Git (pour cloner le projet)
+- Windows (commandes ci‑dessous en PowerShell)
 
-Ajout de livres : un administrateur peut ajouter un nouveau livre en renseignant des informations comme le titre, l’auteur, la date de publication, la catégorie ou la description.
 
-Affichage des livres : les utilisateurs peuvent consulter la liste complète des livres disponibles dans la bibliothèque.
+2. Récupération du projet
+-------------------------------------------------------------------------------
 
-Recherche et filtrage : possibilité de rechercher un livre par titre, auteur ou catégorie.
+```bash
+git clone <URL_DU_REPO>
+cd bibleotheque_livre
+cd project
+```
 
-Modification des livres : les informations d’un livre peuvent être mises à jour si nécessaire.
 
-Suppression des livres : un livre peut être retiré de la bibliothèque.
+3. Création et activation de l’environnement virtuel
+-------------------------------------------------------------------------------
 
-Technologies utilisées
+Depuis le dossier `project` :
 
-Le projet utilise plusieurs technologies du développement web :
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+```
 
-Backend :
+L’environnement virtuel `.venv` est ignoré par Git (voir `.gitignore`).
 
-Framework : Django
 
-Langage : Python
+4. Installation des dépendances
+-------------------------------------------------------------------------------
 
-Base de données : SQLite
+Pour l’instant, l’application utilise principalement Django :
 
-Frontend :
+```powershell
+pip install "django==6.0.3"
+```
 
-Structure des pages : HTML
+Optionnellement, si un fichier `requirements.txt` est ajouté plus tard :
 
-Mise en forme : CSS3
+```powershell
+pip install -r requirements.txt
+```
 
-Système de templates : Django Template Language pour afficher dynamiquement les données provenant de la base de données.
 
-Organisation du projet
+5. Initialisation de la base de données
+-------------------------------------------------------------------------------
 
-Le projet sera structuré selon les bonnes pratiques de Django :
+Toujours depuis le dossier `project` (et avec le venv activé) :
 
-Models : définissent la structure des données (livres, auteurs, catégories).
+```powershell
+python manage.py migrate
+```
 
-Views : gèrent la logique entre les données et les templates.
+Si tu veux créer un super‑utilisateur Django pour accéder à l’admin :
 
-Templates : pages HTML utilisant DTL pour afficher les informations.
+```powershell
+python manage.py createsuperuser
+```
 
-URLs : définissent les routes de navigation de l’application.
 
-Objectifs pédagogiques
+6. Lancer le serveur de développement
+-------------------------------------------------------------------------------
 
-Ce projet permet de :
+Toujours avec le venv activé :
 
-comprendre le fonctionnement du framework Django
+```powershell
+python manage.py runserver
+```
 
-apprendre à manipuler une base de données avec SQLite
+Puis ouvrir le navigateur sur :
 
-utiliser les templates dynamiques avec Django Template Language
+- Application : http://127.0.0.1:8000/
+- Interface d’administration : http://127.0.0.1:8000/admin/
 
-créer une interface web simple avec CSS3
+Pour arrêter le serveur : `CTRL + C` dans le terminal.
 
-développer une application web complète suivant une architecture claire.
+
+7. Structure rapide du projet
+-------------------------------------------------------------------------------
+
+- `project/` : dossier Django principal
+	- `manage.py` : script de gestion Django
+	- `project/` : configuration (settings, urls…)
+	- `project_app/` : application principale (modèles, vues…)
+	- `templates/` : templates HTML
+	- `static/` : fichiers statiques (CSS, JS, images…)
+
+
+8. Commandes utiles (rappel)
+-------------------------------------------------------------------------------
+
+- Activer le venv (depuis `project/`) :
+	```powershell
+	.venv\Scripts\activate
+	```
+- Désactiver le venv :
+	```powershell
+	deactivate
+	```
+
+En suivant ces étapes, toute personne peut cloner le dépôt, installer
+les dépendances et lancer l’application localement.

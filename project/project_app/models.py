@@ -19,7 +19,7 @@ class Book(models.Model):
     photo_book = models.ImageField(upload_to="photos", null=True, blank=True)
     photo_author = models.ImageField(upload_to="photos", null=True, blank=True)
     pages = models.IntegerField(null=True, blank=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     retal_price_day = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     retal_period = models.IntegerField(null=True, blank=True)
     active = models.BooleanField(default=True)

@@ -85,7 +85,7 @@
                     <div class="card-header">
                         <h3 class="card-title">اضافة كتاب</h3>
                     </div>
-                    <form method="POST" enctype="multipart/form-data">
+                    <form method="POST" enctype="multipart/form-data" name="BookForm">
                         {% csrf_token %}
                         <div class="card-body">
                             <input type="text" class="form-control">
@@ -112,18 +112,12 @@
                 <div class="col-4 ">
                     <ul class="nav">
 
+                        {% for category in categories|slice:":5" %}
                         <li class="nav-item ">
-                            <a id="" class="nav-link bg-primary" href="#">تاريخ</a>
+                            <a id="" class="nav-link bg-primary" href="#">{{ category.name }}</a>
                         </li>
-                        <li class="nav-item ">
-                            <a id="" class="nav-link bg-primary" href="#">فن</a>
-                        </li>
-                        <li class="nav-item ">
-                            <a id="" class="nav-link bg-primary" href="#">ثقافة</a>
-                        </li>
-                        <li class="nav-item ">
-                            <a id="" class="nav-link bg-primary" href="#">رومانسية</a>
-                        </li>
+                        {%endfor %}
+
                     </ul>
                 </div>
             </div>
@@ -138,67 +132,95 @@
                                 <span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" href="#"> تعديل</a>
-                                <a class="dropdown-item" href="#">حذف</a>
+                                <a class="dropdown-item" href="{% url 'update' book.id %}"> تعديل</a>
+                                <a class="dropdown-item" href="{% url 'delete' book.id %}">حذف</a>
                             </div>
                         </div>
 
                         {% if book.photo_book %}
                         <div class="widget-user-header bg-info"
-                             style="background-image: url('{{ book.photo_book.url }}');">
-                        {% else %}
-                        <div class="widget-user-header bg-info"
-                             style="background-image: url('{{ DEFAULT_BOOK_IMG }}');">
-                        {% endif %}
-                            <h3 class="widget-user-username">{{ book.title }}</h3>
-                            <h5 class="widget-user-desc">{{ book.author }}</h5>
-                        </div>
-
-                        <div class="widget-user-image">
-                            {% if book.photo_author %}
-                            <img style="width:100px; height: 100px;" class="img-circle elevation-2"
-                                 src="{{ book.photo_author.url }}" alt="User Avatar">
+                            style="background-image: url('{{ book.photo_book.url }}');">
                             {% else %}
-                            <img style="width:100px; height: 100px;" class="img-circle elevation-2"
-                                 src="{{ DEFAULT_AUTHOR_IMG }}" alt="User Avatar">
-                            {% endif %}
-                        </div>
+                            <div class="widget-user-header bg-info"
+                                style="background-image: url('{{ DEFAULT_BOOK_IMG }}');">
+                                {% endif %}
+                                <h3 class="widget-user-username">{{ book.title }}</h3>
+                                <h5 class="widget-user-desc">{{ book.author }}</h5>
+                            </div>
 
-                        <div class="card-footer">
-                            <div class="row">
-                                <div class="col-sm-4 border-right">
-                                    <div class="description-block">
-                                        <h5 class="description-header">{{ book.pages|default:"-" }}</h5>
-                                        <span class="description-text">صفحة</span>
+                            <div class="widget-user-image">
+                                {% if book.photo_author %}
+                                <img style="width:100px; height: 100px;" class="img-circle elevation-2"
+                                    src="{{ book.photo_author.url }}" alt="User Avatar">
+                                {% else %}
+                                <img style="width:100px; height: 100px;" class="img-circle elevation-2"
+                                    src="{{ DEFAULT_AUTHOR_IMG }}" alt="User Avatar">
+                                {% endif %}
+                            </div>
+
+                            <div class="card-footer">
+                                <div class="row">
+                                    <div class="col-sm-4 border-right">
+                                        <div class="description-block">
+                                            <h5 class="description-header">{{ book.pages|default:"-" }}</h5>
+                                            <span class="description-text">صفحة</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-sm-4 border-right">
-                                    <div class="description-block">
-                                        <h5 class="description-header">{{ book.price }}</h5>
-                                        <span class="description-text">السعر</span>
+                                    <div class="col-sm-4 border-right">
+                                        {% if book.price %}
+                                        <div class="description-block">
+                                            <h5 class="description-header">{{ book.price }}</h5>
+                                            <span class="description-text">السعر</span>
+                                        </div>
+                                        {% elif book.retal_price_day %}
+                                        <div class="description-block">
+                                            <h5 class="description-header">{{ book.retal_price_day }}</h5>
+                                            <span class="description-text">سعر الإيجار اليومي</span>
+                                        </div>
+                                        {% else %}
+                                        <div class="description-block">
+                                            <h5 class="description-header">-</h5>
+                                            <span class="description-text">اليوم</span>
+                                        </div>
+                                        {% endif %}
                                     </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div class="description-block">
-                                        <h5 class="description-header text-dark">{{ book.get_status_display }}</h5>
-                                        <span class="description-text">الحالة</span>
+                                    <div class="col-sm-4">
+                                        {% if book.get_status_display == "Available"%}
+
+                                        <div class="description-block">
+                                            <h5 class="description-header text-success">{{ book.get_status_display }}
+                                            </h5>
+                                            <span class="description-text">الحالة</span>
+                                        </div>
+                                        {% elif book.get_status_display == "Rented" %}
+                                        <div class="description-block">
+                                            <h5 class="description-header text-danger">{{ book.get_status_display }}
+                                            </h5>
+                                            <span class="description-text">الحالة</span>
+                                        </div>
+                                        {% else %}
+                                        <div class="description-block">
+                                            <h5 class="description-header text-warning">{{ book.get_status_display }}
+                                            </h5>
+                                            <span class="description-text">الحالة</span>
+                                        </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {% empty %}
+                    <div class="col-12 text-center">
+                        <!--اضف صورة هنا في حالة عدم وجود كتب-->
+                    </div>
+                    {% endfor %}
                 </div>
-                {% empty %}
-                <div class="col-12 text-center">
-                    <!--اضف صورة هنا في حالة عدم وجود كتب-->
-                </div>
-                {% endfor %}
             </div>
         </div>
+        <!-- /.container-fluid -->
     </div>
-    <!-- /.container-fluid -->
-</div>
-<!-- /.content -->
+    <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
- {%  endblock %}
+{% endblock %}

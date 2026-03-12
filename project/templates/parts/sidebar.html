@@ -42,10 +42,12 @@
                                 <p class="text-light"> Add New </p>
                             </a>
                         </li>
-                        <form id="cat" method="POST">
+                        <form id="cat" method="POST">*
 
-                            <input type="text" class="form-control">
-
+                            {% csrf_token %}
+                            {{ category_form }}
+                           
+                
                             <button type="submit" class="btn btn-success">save</button>
                             <button id="backcat" class="btn btn-primary ">back</button>
                         </form>

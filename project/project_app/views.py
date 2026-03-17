@@ -38,7 +38,7 @@ def update(request, id):
         form = BookForm(request.POST, request.FILES, instance=book)
         if form.is_valid():
             form.save()
-            return redirect("books")  # ou "index" selon tes urls
+            return redirect("/")  # ou "index" selon tes urls
     else:
         form = BookForm(instance=book)
 

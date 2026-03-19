@@ -29,6 +29,9 @@
 {% endblock %}
 {% include 'parts/footer.html' %}
 
+
+
+
 </div>
 <!-- ./wrapper -->
 
@@ -58,10 +61,8 @@
 <!-- OPTIONAL SCRIPTS -->
 
 <script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
-
 <script src="{% static 'dist/js/demo.js' %}"></script>
-<!--<script src="{% static 'dist/js/pages/dashboard3.js' %} "></script>
--->
+
 <script>
     $(document).ready(function () {
         $('#myModal').on('shown.bs.modal', function () {
@@ -69,6 +70,53 @@
         });
         /*here i will make loop for get id category and status for contact with books */
         /*حساب اجمالي الارباح و هي عبارة عن حاصل جمع سعر الكتب عند البيع بالاضافة الى سعر استعارة الكتاب*/
+    });
+
+            // $('#retal_period').keyup(function () {
+            //         $('#total_rental').val($(this).val() * $('#retal_price_day').val());
+            //     });
+</script>
+<script>
+    // Filtrage des livres par catégorie
+    if (typeof categories !== 'undefined') {
+        categories.forEach(function (category) {
+            $('#category-' + category.id).click(function (e) {
+                e.preventDefault();
+                $('.book-item').hide();
+                $('.category-' + category.id).show();
+            });
+            $('.status' + category.id).click(function (e) {
+                e.preventDefault();
+                $('.book-item').hide();
+                $('.book-status-' + category.id).show();
+            });
+        });
+
+        
+    } else {
+        // Si le contexte Django n'est pas accessible, fallback sur les liens présents
+        $('[id^=category-]').click(function (e) {
+            e.preventDefault();
+            var catId = $(this).attr('id').replace('category-', '');
+            $('.book-item').hide();
+            $('.category-' + catId).show();
+        });
+            $('[id^=status]').click(function (e) {
+                e.preventDefault();
+                var status = $(this).attr('id').replace('status', '');
+                $('.book-item').hide();
+                $('.book-status-' + status).show();
+            });
+    }
+
+
+</script>
+
+<script>
+
+
+    $('#retal_period').keyup(function () {
+        $('#total_rental').val($(this).val() * $('#retal_price_day').val());
     });
 </script>
 <script>
@@ -175,7 +223,7 @@
             type: 'pie',
             data: {
                 datasets: [{
-                    data: ['35', '25', '40'],
+                    data: ['{{ booksavailable }}', '{{ bookssold }}', '{{ booksrented }}'],
                     backgroundColor: ["#27c100", "#f3545d", "#fdaf4b"],
                     borderWidth: 10,
 

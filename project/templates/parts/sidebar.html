@@ -18,7 +18,7 @@
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{% url 'books' %}" class="nav-link">
                         <i class="nav-icon fas fa-th"></i>
                         <p>
                             New Books
@@ -55,7 +55,7 @@
 
                         {% for cat in categories %}
                         <li style="cursor: pointer;" class="nav-item">
-                            <a id="" class="nav-link">
+                            <a id="category-{{ cat.id }}" class="nav-link ca">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>{{cat.name}}</p>
                             </a>
@@ -66,20 +66,20 @@
 
                 <li class="nav-header">الكتب المستعارة</li>
 
-                <li style="cursor: pointer;" class="nav-item">
+                <li style="cursor: pointer;" class="nav-item statussold">
                     <a id="statusSold" class="nav-link">
                         <i class="nav-icon far fa-circle text-danger"></i>
                         <p class="text">تم بيعه</p>
                     </a>
                 </li>
-                <li style="cursor: pointer;" class="nav-item">
-                    <a id="" class="nav-link">
+                <li style="cursor: pointer;" class="nav-item statusrented">
+                    <a id="statusRented" class="nav-link">
                         <i class="nav-icon far fa-circle text-warning"></i>
                         <p>تم استعارته</p>
                     </a>
                 </li>
-                <li style="cursor: pointer;" class="nav-item">
-                    <a id="" class="nav-link">
+                <li style="cursor: pointer;" class="nav-item statusavailable">
+                    <a id="statusAvailable" class="nav-link">
                         <i class="nav-icon far fa-circle text-info"></i>
                         <p>متاح</p>
                     </a>

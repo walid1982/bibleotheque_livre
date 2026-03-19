@@ -18,6 +18,10 @@ def index(request):
         "books": Book.objects.all(),
         "form": BookForm(),
         "category_form": CategoryForm(),
+        "all_books": Book.objects.filter(active=True).count(),
+        "bookssold": Book.objects.filter(status='sold').count(),
+        "booksrented": Book.objects.filter(status='rented').count(),
+        "booksavailable": Book.objects.filter(status='available').count(),
     }
     return render(request, "pages/index.html", context)
 
@@ -48,5 +52,5 @@ def delete(request, id):
     book = get_object_or_404(Book, id=id)
     if request.method == "POST":
         book.delete()
-        return redirect("books")  # ou "index" selon tes urls
+        return redirect("/")  # ou "index" selon tes urls
     return render(request, "pages/delete.html", {"book": book})

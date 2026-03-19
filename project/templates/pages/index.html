@@ -24,7 +24,9 @@
                             <div class="card-body">
                                 <div class="d-flex">
                                     <p class="d-flex flex-column">
-                                        <span class="text-bold text-lg">500</span>
+                                        <span class="text-bold text-lg">
+                                            {{ all_books }}
+                                        </span>
                                         <span>اجمالي عدد الكتب</span>
                                     </p>
                                 </div>
@@ -109,8 +111,8 @@
                     <ul class="nav">
 
                         {% for category in categories|slice:":5" %}
-                        <li class="nav-item ">
-                            <a id="" class="nav-link bg-primary" href="#">{{ category.name }}</a>
+                        <li class="nav-item">
+                            <a class="nav-link bg-primary" href="#" id="category-{{ category.id }}">{{ category.name }}</a>
                         </li>
                         {%endfor %}
 
@@ -120,7 +122,7 @@
             <!-- books -->
             <div class="row">
                 {% for book in books %}
-                <div class="col-md-4">
+                <div class="col-md-4 book-item category-{{ book.category.id }} book-status-{{ book.get_status_display}}">
                     <div class="card card-widget widget-user">
                         <div style="position: absolute;" class="btn-group">
                             <button type="button" class="btn dropdown-toggle dropdown-toggle-split"
@@ -220,3 +222,5 @@
 </div>
 <!-- /.content-wrapper -->
 {% endblock %}
+
+

@@ -4,32 +4,46 @@ from .forms import BookForm, CategoryForm
 
 
 def index(request):
+    title = request.GET.get("search_name", "").strip()
+    books = Book.objects.all()
+
+    if title:
+        books = books.filter(title__icontains=title)
+
     if request.method == "POST":
         add_book = BookForm(request.POST, request.FILES)
         add_category = CategoryForm(request.POST)
+
         if add_category.is_valid():
             add_category.save()
-            
+
         if add_book.is_valid():
             add_book.save()
-             
+            return redirect("/")  # evite la re-soumission du formulaire au refresh
+
     context = {
         "categories": Category.objects.all(),
-        "books": Book.objects.all(),
+        "books": books,  # <- important
         "form": BookForm(),
         "category_form": CategoryForm(),
         "all_books": Book.objects.filter(active=True).count(),
-        "bookssold": Book.objects.filter(status='sold').count(),
-        "booksrented": Book.objects.filter(status='rented').count(),
-        "booksavailable": Book.objects.filter(status='available').count(),
+        "bookssold": Book.objects.filter(status="sold").count(),
+        "booksrented": Book.objects.filter(status="rented").count(),
+        "booksavailable": Book.objects.filter(status="available").count(),
     }
     return render(request, "pages/index.html", context)
 
 
 def books(request):
+    title = request.GET.get("search_name", "").strip()
+    books_queryset = Book.objects.all()
+
+    if title:
+        books_queryset = books_queryset.filter(title__icontains=title)
+
     context = {
         "categories": Category.objects.all(),
-        "books": Book.objects.all(),
+        "books": books_queryset,
         #"form": BookForm(),
     }
     #return render(request, "pages/index.html", context)

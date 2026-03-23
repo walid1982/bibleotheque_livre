@@ -12,6 +12,7 @@ class Book(models.Model):
         ("available", "Available"),
         ("rented", "Rented"),
         ("reserved", "Reserved"),
+        ("sold", "Sold"),
     )
 
     title = models.CharField(max_length=250)

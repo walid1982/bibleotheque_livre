@@ -1,0 +1,471 @@
+################################
+Guide complet du projet Django
+(Révision + Préparation entretien)
+################################
+
+But du document :
+- Revoir ce que tu as fait dans le projet
+- Comprendre le “pourquoi” de chaque étape
+- Savoir expliquer clairement en entretien
+
+
+===============================================================================
+1) Comment planifier le projet et créer un environnement virtuel
+===============================================================================
+
+Objectif :
+- Organiser le projet avant de coder
+- Isoler les dépendances Python (éviter les conflits)
+
+Pourquoi c’est important :
+- En entretien, on attend que tu saches structurer ton travail
+- Un environnement virtuel est une bonne pratique professionnelle
+
+Ce que j’ai fait :
+- Défini les fonctionnalités (CRUD livres, catégories, images, recherche, stats)
+- Créé un environnement virtuel `.venv`
+- Installé Django + Pillow
+
+Commandes (Windows PowerShell) :
+cd C:\Projects
+mkdir bibleotheque_livre
+cd bibleotheque_livre
+mkdir project
+cd project
+python -m venv .venv
+.venv\Scripts\Activate
+pip install django pillow
+pip freeze > requirements.txt
+
+Point entretien (à dire) :
+“J’ai commencé par cadrer les besoins puis j’ai isolé l’environnement avec venv pour garantir la reproductibilité.”
+
+
+===============================================================================
+2) Créer une application au sein d’un projet Django
+===============================================================================
+
+Objectif :
+- Créer le projet principal + l’app métier
+
+Concept :
+- Projet Django = configuration globale
+- App Django = module fonctionnel (ici: project_app)
+
+Commandes :
+django-admin startproject project .
+python manage.py startapp project_app
+
+Action obligatoire :
+- Ajouter `"project_app"` dans `INSTALLED_APPS` (settings.py)
+
+Point entretien :
+“J’ai séparé la config globale du métier en créant une app dédiée pour la maintenabilité.”
+
+
+===============================================================================
+3) Configurer les routes (URLs)
+===============================================================================
+
+Objectif :
+- Associer les URL aux vues
+
+Ce que j’ai fait :
+- Créé `project_app/urls.py`
+- Inclus les URLs de l’app dans `project/urls.py`
+- Nommé les routes (`name="index"`, `name="update"`, etc.)
+
+Exemple de routes :
+- `/` -> index
+- `/books/` -> liste livres
+- `/update/<id>/` -> modifier
+- `/delete/<id>/` -> supprimer
+
+Piège fréquent :
+- Erreur `NoReverseMatch` si le `name` de la route n’existe pas
+
+Point entretien :
+“J’utilise des noms de routes pour éviter les URLs en dur et faciliter la maintenance.”
+
+
+===============================================================================
+4) Créer la première fonction dans views.py
+===============================================================================
+
+Objectif :
+- Afficher une première page
+
+Principe :
+- Une vue reçoit `request`, prépare un `context`, puis `render(template, context)`
+
+Exemple logique :
+- `index(request)` retourne `pages/index.html`
+
+Point entretien :
+“Le flux Django est URL -> View -> Template -> HTML rendu.”
+
+
+===============================================================================
+5) Ajouter le front-end au projet Django
+===============================================================================
+
+Objectif :
+- Intégrer le design HTML/CSS/JS dans Django Templates
+
+Structure :
+templates/
+- base.html
+- pages/index.html
+- pages/books.html
+- pages/update.html
+- parts/navbar.html
+- parts/sidebar.html
+
+Bonnes pratiques :
+- `base.html` contient le layout commun
+- `index.html` fait `{% extends "base.html" %}`
+- `navbar/sidebar` via `{% include %}`
+
+Point entretien :
+“J’ai factorisé l’interface avec `extends` et `include` pour éviter la duplication.”
+
+
+===============================================================================
+6) Configurer les fichiers static
+===============================================================================
+
+Objectif :
+- Servir CSS, JS, images statiques
+
+settings.py :
+- `STATIC_URL = "/static/"`
+- `STATICFILES_DIRS = [BASE_DIR / "project" / "static"]` (selon ta structure)
+
+Template :
+- `{% load static %}`
+- `<link href="{% static 'css/style.css' %}">`
+
+Point entretien :
+“J’ai séparé les assets statiques des fichiers uploadés utilisateur (media).”
+
+
+===============================================================================
+7) Ajouter des images static
+===============================================================================
+
+Objectif :
+- Utiliser des images par défaut (fallback)
+
+Exemple :
+- image par défaut livre
+- avatar auteur par défaut
+
+Bon pattern :
+- Charger une fois :
+  `{% static 'img/default-book.jpg' as DEFAULT_BOOK_IMG %}`
+
+Point entretien :
+“J’ai implémenté des fallbacks visuels pour éviter les images cassées.”
+
+
+===============================================================================
+8) Créer un lien pour chaque page du site
+===============================================================================
+
+Objectif :
+- Navigation complète
+
+Méthode :
+- Toujours utiliser `{% url 'nom_route' %}`
+- Ex: `{% url 'update' book.id %}`
+
+Piège :
+- Nom de route absent -> `NoReverseMatch`
+
+Point entretien :
+“J’utilise le système de nommage Django pour découpler templates et URLs.”
+
+
+===============================================================================
+9) Créer des tables dans la base de données (models)
+===============================================================================
+
+Objectif :
+- Concevoir le schéma métier
+
+Modèles clés :
+- Category(name)
+- Book(title, author, photo_book, photo_author, pages, price, status, category, ...)
+
+Exécuter :
+python manage.py makemigrations
+python manage.py migrate
+
+Points importants :
+- `null=True` = base de données
+- `blank=True` = formulaire
+
+Point entretien :
+“J’ai modélisé les entités et leurs relations via l’ORM Django (ForeignKey).”
+
+
+===============================================================================
+10) Configurer l’admin Django
+===============================================================================
+
+Objectif :
+- Gérer rapidement les données depuis `/admin`
+
+Ce que j’ai fait :
+- Enregistré `Book` et `Category` dans `admin.py`
+- Créé un superuser
+
+Commandes :
+python manage.py createsuperuser
+python manage.py runserver
+
+Point entretien :
+“J’ai utilisé Django admin pour accélérer les opérations back-office et les tests de données.”
+
+
+===============================================================================
+11) Configurer les fichiers media (uploads)
+===============================================================================
+
+Objectif :
+- Gérer les images uploadées par l’utilisateur
+
+settings.py :
+- `MEDIA_URL = "/media/"`
+- `MEDIA_ROOT = BASE_DIR / "media"`
+
+project/urls.py :
+- Ajouter `static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)` en DEBUG
+
+Important :
+- Le dossier `media` peut apparaître au premier upload uniquement
+
+Point entretien :
+“J’ai distingué static (assets app) et media (contenu utilisateur uploadé).”
+
+
+===============================================================================
+12) Récupérer les livres et les afficher
+===============================================================================
+
+Objectif :
+- Lire la DB et rendre les données
+
+Vue :
+- `books = Book.objects.all()`
+- Envoyer dans `context`
+
+Template :
+- Boucle `{% for book in books %}`
+- Affichage des champs
+
+Point entretien :
+“J’ai utilisé l’ORM pour interroger la base puis injecté les données dans le template via context.”
+
+
+===============================================================================
+13) Récupérer les catégories et les afficher
+===============================================================================
+
+Objectif :
+- Afficher la taxonomie des livres
+
+Vue :
+- `categories = Category.objects.all()`
+
+Template :
+- Boucle catégories (menu, filtre, formulaire)
+
+Point entretien :
+“J’ai exposé les catégories au front pour améliorer la navigation et la classification.”
+
+
+===============================================================================
+14) Ajouter des livres depuis le site (Create)
+===============================================================================
+
+Objectif :
+- Formulaire front pour créer un livre
+
+Composants :
+- `BookForm` (ModelForm)
+- `<form method="POST" enctype="multipart/form-data">`
+- `{% csrf_token %}`
+- `request.FILES` pour images
+
+Flux :
+- POST -> valider -> save -> redirect
+
+Point entretien :
+“J’ai sécurisé le formulaire avec CSRF et géré les uploads via request.FILES.”
+
+
+===============================================================================
+15) Ajouter des catégories depuis le site
+===============================================================================
+
+Objectif :
+- Créer des catégories sans passer par admin
+
+Composants :
+- `CategoryForm`
+- Traitement POST dans la vue index
+
+Si 2 formulaires sur la même page :
+- Distinguer avec le `name` des boutons submit (`add_book`, `add_category`)
+
+Point entretien :
+“J’ai géré plusieurs formulaires sur la même vue en distinguant les actions côté POST.”
+
+
+===============================================================================
+16) Modifier les livres (Update)
+===============================================================================
+
+Objectif :
+- Éditer un livre existant
+
+Pattern :
+- `book = get_object_or_404(Book, id=id)`
+- `form = BookForm(instance=book)` (GET)
+- `BookForm(request.POST, request.FILES, instance=book)` (POST)
+
+Résultat :
+- Mise à jour sans créer un nouvel objet
+
+Point entretien :
+“J’ai utilisé `instance=` pour faire une vraie mise à jour de l’objet existant.”
+
+
+===============================================================================
+17) Supprimer les livres (Delete)
+===============================================================================
+
+Objectif :
+- Supprimer proprement et de façon sûre
+
+Bonne pratique :
+- Suppression en POST (pas via GET)
+
+Template :
+- petit `<form method="post" action="...delete...">`
+- `{% csrf_token %}`
+
+Vue :
+- vérifier POST
+- `book.delete()`
+- redirect
+
+Point entretien :
+“J’ai évité la suppression en GET pour respecter les bonnes pratiques HTTP et sécurité.”
+
+
+===============================================================================
+18) Créer des statistiques
+===============================================================================
+
+Objectif :
+- Afficher des indicateurs dashboard
+
+Exemples :
+- total livres
+- total catégories
+- livres disponibles / loués / réservés
+
+ORM :
+- `.count()`
+- `.filter(status=...)`
+
+Point entretien :
+“J’ai construit des KPIs simples via l’ORM pour donner une vision métier en temps réel.”
+
+
+===============================================================================
+19) Configurer la recherche
+===============================================================================
+
+Objectif :
+- Rechercher par titre, auteur, catégorie
+
+Technique :
+- `q = request.GET.get("q", "")`
+- `Q(...)` pour combiner plusieurs champs
+
+Exemple logique :
+- `title__icontains=q`
+- `author__icontains=q`
+- `category__name__icontains=q`
+
+Point entretien :
+“J’ai implémenté une recherche multi-critères avec `Q` et des filtres `icontains`.”
+
+
+===============================================================================
+20) Finaliser le projet
+===============================================================================
+
+Objectif :
+- Stabiliser et professionnaliser le rendu final
+
+Checklist :
+- routes OK
+- vues OK
+- templates équilibrés (balises div)
+- static/media OK
+- CRUD OK
+- recherche OK
+- stats OK
+- admin OK
+- tests manuels OK
+- code nettoyé
+
+Commandes utiles :
+python manage.py check
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+
+Point entretien :
+“J’ai terminé par une phase de validation complète (fonctionnelle + structurelle) pour garantir la qualité.”
+
+
+===============================================================================
+Questions fréquentes en entretien (réponses courtes)
+===============================================================================
+
+1) Pourquoi Django ?
+- Framework complet, rapide pour CRUD, admin intégré, ORM puissant.
+
+2) Différence entre static et media ?
+- static: assets du projet (CSS/JS/images fixes)
+- media: fichiers uploadés par les utilisateurs
+
+3) Pourquoi utiliser ModelForm ?
+- Moins de code, validation automatique liée au modèle.
+
+4) Pourquoi get_object_or_404 ?
+- Évite les erreurs si l’objet n’existe pas, renvoie une 404 propre.
+
+5) Pourquoi POST pour delete ?
+- Action destructive, meilleure sécurité, respect HTTP.
+
+6) Rôle des migrations ?
+- Versionner et appliquer les changements de schéma DB.
+
+7) `null=True` vs `blank=True` ?
+- null: base de données
+- blank: validation formulaire
+
+8) C’est quoi l’ORM Django ?
+- Couche d’abstraction pour requêter la DB en Python sans SQL brut.
+
+9) Pourquoi requirements.txt ?
+- Reproductibilité de l’environnement.
+
+10) Comment tu as structuré ton projet ?
+- séparation claire : config (project), logique métier (project_app), templates, static, media.

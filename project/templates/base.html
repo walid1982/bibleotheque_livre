@@ -42,18 +42,9 @@
 
 
 
-
-
-
-
-
-
-
 <!-- REQUIRED SCRIPTS -->
-<script src="{% static 'plugins/jquery_datepacker/jquery_ui.js' %}"></script>
-
-<!-- jQuery -->
 <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'plugins/jquery_datepacker/jquery_ui.js' %}"></script>
 <!-- Bootstrap -->
 <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 <!-- AdminLTE -->
@@ -65,16 +56,39 @@
 
 <script>
     $(document).ready(function () {
+        var soldTotal = 0;
+        var rentedTotal = 0;
+
+        function parseAmount(textValue) {
+            var parsed = parseFloat(textValue);
+            return isNaN(parsed) ? 0 : parsed;
+        }
+
+        $('.total_price_book, .total_rental_price').hide();
         $('#myModal').on('shown.bs.modal', function () {
             $('#myInput').trigger('focus')
         });
-        /*here i will make loop for get id category and status for contact with books */
-        /*حساب اجمالي الارباح و هي عبارة عن حاصل جمع سعر الكتب عند البيع بالاضافة الى سعر استعارة الكتاب*/
+
+        $('.total_price_book').each(function () {
+            soldTotal += parseAmount($(this).text());
+        });
+
+        $('.total_rental_price').each(function () {
+            rentedTotal += parseAmount($(this).text());
+        });
+
+        var total = soldTotal + rentedTotal;
+        $('#soldtotals').text(soldTotal.toFixed(2));
+        $('#rentedtotals').text(rentedTotal.toFixed(2));
+        $('#totalsalarys').text(total.toFixed(2));
+
+        // Share computed values with the chart initialization block.
+        window.soldTotal = soldTotal;
+        window.rentedTotal = rentedTotal;
+
     });
 
-            // $('#retal_period').keyup(function () {
-            //         $('#total_rental').val($(this).val() * $('#retal_price_day').val());
-            //     });
+
 </script>
 <script>
     // Filtrage des livres par catégorie
@@ -113,17 +127,6 @@
 </script>
 
 <script>
-
-
-    $('#retal_period').keyup(function () {
-        $('#total_rental').val($(this).val() * $('#retal_price_day').val());
-    });
-</script>
-<script>
-
-
-
-
     $(function () {
         'use strict'
 
@@ -156,14 +159,14 @@
                         backgroundColor: '#007bff',
                         borderColor: '#007bff',
                         data: [
-                            '50',
+                            (typeof window.soldTotal === 'number' ? window.soldTotal : 0),
                         ]
                     },
                     {
                         backgroundColor: '#ced4da',
                         borderColor: '#ced4da',
                         data: [
-                            '30',
+                            (typeof window.rentedTotal === 'number' ? window.rentedTotal : 0),
                         ]
                     }
                 ]
@@ -256,6 +259,27 @@
 
 
 
+</script>
+
+<script>
+    $(function () {
+        function getNumericValue(selectors) {
+            var rawValue = $(selectors).first().val();
+            var parsedValue = parseFloat(rawValue);
+            return isNaN(parsedValue) ? 0 : parsedValue;
+        }
+
+        function updateRentalTotal() {
+            var period = getNumericValue('#retal_period, #rental_period');
+            var pricePerDay = getNumericValue('#retal_price_day, #rental_price_day');
+            var total = period * pricePerDay;
+            $('#total_rental, #id_total_rental').val(total);
+        }
+
+        // Delegate events so it works on all pages/forms using either field naming.
+        $(document).on('input', '#retal_period, #retal_price_day, #rental_period, #rental_price_day', updateRentalTotal);
+        updateRentalTotal();
+    });
 </script>
 
 </body>

@@ -48,6 +48,17 @@
                                     <h3 class="card-title">الارباح</h3>
                                 </div>
                             </div>
+                            {% for book in books %}
+                                {% if book.price and book.status == "sold" %}
+                                    <p class="total_price_book">{{ book.price }}</p>
+                                {% endif %}
+                                {% if book.retal_price_day and book.status == "rented" %}
+                                    <p class="total_rental_price">{{ book.retal_price_day }}</p>
+                                {% endif %}
+                            {% endfor %}
+
+
+
                             <div class="card-body">
                                 <div class="d-flex">
                                     <p class="d-flex flex-column">
@@ -71,6 +82,7 @@
                                     </span>
                                 </div>
                             </div>
+                            
                         </div>
                     </div>
 
